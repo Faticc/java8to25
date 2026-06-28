@@ -2,7 +2,6 @@
 \mods\1.7.10\CodeChickenCore-1.4.13.jar del
 \mods\coretweaks-0.3.4.5-GTNH.jar del 
 \mods\inventorytweaks-1.7.1.jar del
-
 \mods\++unimixins-all-1.7.10-0.1.23.jar add
 \mods\1.7.10\CodeChickenCore-1.4.1.jar add
 \mods\archaicfix-0.7.9.jar add
