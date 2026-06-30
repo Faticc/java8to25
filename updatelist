@@ -8,9 +8,3 @@
 \+lwjgl3ify-3.0.20-forgePatches.jar add
 \+RetroFuturaBootstrap-1.1.0.jar add
 \classpath.txt add
-\auth\auth_pb2.py add
-\auth\auth_pb2_grpc.py add
-\auth\common_pb2.py add
-\common_pb2_grpc.py add
-\auth\__init__.py add
-\play.py
