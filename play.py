@@ -10,7 +10,9 @@ import glob
 import sys
 import os
 import io
+from requests.adapters import HTTPAdapter
 from typing import Optional, List, Dict
+from urllib3.util.retry import Retry
 from dataclasses import dataclass
 from auth import send_request
 from pathlib import Path
@@ -169,69 +171,84 @@ def save_hashes(root, hashes):
     (root / HASH_FILE).write_text(json.dumps(hashes, indent=2))
 
 
-def percent(i, total):
-    p = int(i / total * 100)
-    print(f"\r{p}%", end="")
+def download_zip(url, retries=5):
+    session = requests.Session()
+    retry = Retry(
+        total=retries,
+        backoff_factor=1,
+        status_forcelist=[500, 502, 503, 504],
+        raise_on_status=False,
+    )
+    session.mount("http://", HTTPAdapter(max_retries=retry))
+    session.mount("https://", HTTPAdapter(max_retries=retry))
+
+    with session.get(url, stream=True, timeout=60) as r:
+        r.raise_for_status()
+
+        total = int(r.headers.get("Content-Length", 0))
+        buf = io.BytesIO()
+        downloaded = 0
+
+        for chunk in r.iter_content(chunk_size=1024 * 64):
+            if not chunk:
+                continue
+            buf.write(chunk)
+            downloaded += len(chunk)
+
+            if total:
+                percent = int(downloaded / total * 100)
+                print(f"\rСкачивание ZIP: {percent}% ({downloaded/1024/1024:.1f} MB / {total/1024/1024:.1f} MB)", end="")
+            else:
+                print(f"\rСкачано: {downloaded/1024/1024:.1f} MB", end="")
+
+        print()
+
+        return buf.getvalue()
+
+
+def extract_with_progress(zip_bytes, prefix, target_root):
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
+        base = next((n for n in z.namelist() if n.endswith(prefix + "/")), None)
+        if not base:
+            raise RuntimeError(prefix + " не найдены.")
+
+        names = [n for n in z.namelist() if n.startswith(base)]
+        total = len(names)
+
+        for i, name in enumerate(names, 1):
+            p = int(i / total * 100)
+            print(f"\r{prefix}: {p}% ({i}/{total})", end="")
+
+            rel = name[len(base):]
+            target = target_root / rel
+
+            if name.endswith("/"):
+                target.mkdir(parents=True, exist_ok=True)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(z.read(name))
+        print()
 
 
 def ensure_libs(root):
-    libs = root / 'libraries25'
+    libs = root / "libraries25"
     if libs.exists():
         return
-    print('Загрузка libraries25...')
-    r = requests.get(ZIP_URL, timeout=60)
-    r.raise_for_status()
-
-    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-        prefix = next((n for n in z.namelist() if n.endswith('libraries25/')), None)
-        if not prefix:
-            raise RuntimeError('libraries25 не найдены.')
-
-        names = [n for n in z.namelist() if n.startswith(prefix)]
-        total = len(names)
-
-        for i, name in enumerate(names, 1):
-            percent(i, total)
-            rel = name[len(prefix):]
-            target = libs / rel
-
-            if name.endswith('/'):
-                target.mkdir(parents=True, exist_ok=True)
-            else:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(z.read(name))
-
-    print("\nlibraries загружены.")
+    print("Загрузка libraries25...")
+    zip_bytes = download_zip(ZIP_URL)
+    extract_with_progress(zip_bytes, "libraries25", libs)
+    print("libraries загружены.")
 
 
 def ensure_natives(root):
-    natives = root / 'natives25'
+    natives = root / "natives25"
     if natives.exists():
         return
-    print('Загрузка natives25...')
-    r = requests.get(ZIP_URL, timeout=60)
-    r.raise_for_status()
+    print("Загрузка natives25...")
+    zip_bytes = download_zip(ZIP_URL)
+    extract_with_progress(zip_bytes, "natives25", natives)
+    print("natives загружены.")
 
-    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-        prefix = next((n for n in z.namelist() if n.endswith('natives25/')), None)
-        if not prefix:
-            raise RuntimeError('natives25 не найдены.')
-
-        names = [n for n in z.namelist() if n.startswith(prefix)]
-        total = len(names)
-
-        for i, name in enumerate(names, 1):
-            percent(i, total)
-            rel = name[len(prefix):]
-            target = natives / rel
-
-            if name.endswith('/'):
-                target.mkdir(parents=True, exist_ok=True)
-            else:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(z.read(name))
-
-    print("\nnatives загружены.")
 
 
 def prefix(name):
