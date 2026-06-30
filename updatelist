@@ -5,3 +5,5 @@
 \mods\coretweaks-0.3.4.5-GTNH-git.1+54605475d2-dirty.jar add
 \mods\jarjar-0.3.3-beta.jar add
 \mods\lwjgl3ify-3.0.20.jar add
+\+lwjgl3ify-3.0.20-forgePatches.jar add
+\+RetroFuturaBootstrap-1.1.0.jar add
