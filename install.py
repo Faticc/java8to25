@@ -1,10 +1,11 @@
 import os
+import sys
 import json
 import getpass
 import subprocess
 import urllib.request
 from pathlib import Path
-import sys
+
 
 # ---------------------------------------------------------
 # 0. Универсальная функция ввода с возможностью выхода
@@ -98,7 +99,7 @@ if not client_path.exists():
 # 6. Сохранение config.json
 # ---------------------------------------------------------
 
-config_path = Path("config.json")
+config_path = client_path / "config.json"
 print("Создаю или перезаписываю config.json...")
 
 with open(config_path, "w", encoding="utf-8") as f:
@@ -155,6 +156,7 @@ else:
 
 print("Проверяю зависимости...")
 subprocess.run([str(pip_path), "install", "-r", str(req_path)], check=True)
+os.remove(req_path)
 print("Зависимости установлены!")
 
 # ---------------------------------------------------------
@@ -196,14 +198,14 @@ else:
     vbs_path = client_path / "create_shortcut.vbs"
 
     vbs_content = f'''
-Set oWS = WScript.CreateObject("WScript.Shell")
-sLinkFile = "{shortcut_path}"
-Set oLink = oWS.CreateShortcut(sLinkFile)
-oLink.TargetPath = "{run_bat_path}"
-oLink.WorkingDirectory = "{client_path}"
-oLink.IconLocation = "{run_bat_path}"
-oLink.Save
-'''
+    Set oWS = WScript.CreateObject("WScript.Shell")
+    sLinkFile = "{shortcut_path}"
+    Set oLink = oWS.CreateShortcut(sLinkFile)
+    oLink.TargetPath = "{run_bat_path}"
+    oLink.WorkingDirectory = "{client_path}"
+    oLink.IconLocation = "{run_bat_path}"
+    oLink.Save
+    '''
 
     with open(vbs_path, "w", encoding="utf-8") as f:
         f.write(vbs_content)
