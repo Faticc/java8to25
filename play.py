@@ -18,10 +18,12 @@ from pathlib import Path
 
 
 # ==========================================
-BASE = "https://raw.githubusercontent.com/Faticc/java8to25/refs/heads/main"
-UPDATELIST = f"{BASE}/updatelist"
-ZIP_URL = "https://github.com/Faticc/java8to25/archive/refs/heads/main.zip"
-HASH_FILE = "mod_hashes.json"
+BASE = 'https://raw.githubusercontent.com/Faticc/java8to25/refs/heads/main'
+UPDATELIST = f'{BASE}/updatelist'
+ZIP_URL = 'https://github.com/Faticc/java8to25/archive/refs/heads/main.zip'
+HASH_FILE = 'mod_hashes.json'
+
+STATE_FILE = 'patch_state.json'
 
 BJE_BASE64 = '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'
 
@@ -30,9 +32,40 @@ REFMAP_JSON_BASE64 = 'ewogICJtYXBwaW5ncyI6IHsKICAgICJydS9za3lfZHJpdmUvbWl4aW5zL2
 EARLY_JSON_BASE64 = 'ewogICJyZXF1aXJlZCI6IHRydWUsCiAgInRhcmdldCI6ICJAZW52KERFRkFVTFQpIiwKICAibWluVmVyc2lvbiI6ICIwLjguNS1HVE5IIiwKICAiY29tcGF0aWJpbGl0eUxldmVsIjogIkpBVkFfOCIsCiAgInBhY2thZ2UiOiAicnUuc2t5X2RyaXZlLm1peGlucy5lYXJseSIsCiAgInJlZm1hcCI6ICJtaXhpbnMuZHdjaXR5LnJlZm1hcC5qc29uIiwKICAicGx1Z2luIjogInJ1LnNreV9kcml2ZS5taXhpbnMuTWl4aW5Db25maWdQbHVnaW4iLAogICJtaXhpbnMiOiBbCiAgICAiY29tbW9uLnZhbmlsbGEuTWl4aW5CbG9ja0ZlbmNlIiwKICAgICJjb21tb24udmFuaWxsYS5NaXhpbkJsb2NrVmluZSIKICBdLAogICJjbGllbnQiOiBbCiAgICAiY2xpZW50LnZhbmlsbGEuTWl4aW5DMDBQYWNrZXRMb2dpblN0YXJ0IiwKICAgICJjbGllbnQudmFuaWxsYS5NaXhpbkd1aUNvbnRhaW5lckNyZWF0aXZlIiwKICAgICJjbGllbnQudmFuaWxsYS5NaXhpbkd1aVNjcmVlbiIsCiAgICAiY2xpZW50LnZhbmlsbGEuTWl4aW5JdGVtUmVuZGVyZXIiLAogICAgImNsaWVudC52YW5pbGxhLk1peGluTWluZWNyYWZ0IiwKICAgICJjbGllbnQudmFuaWxsYS5NaXhpblJlbmRlckJsb2NrcyIsCiAgICAiY2xpZW50LnZhbmlsbGEuTWl4aW5SZW5kZXJHbG9iYWwiCiAgXSwKICAic2VydmVyIjogWwogICAgInNlcnZlci52YW5pbGxhLkZNTE5ldHdvcmtIYW5kbGVyTWl4aW4iLAogICAgInNlcnZlci52YW5pbGxhLk1peGluQW52aWxDaHVua0xvYWRlciIsCiAgICAic2VydmVyLnZhbmlsbGEuTWl4aW5DMDBQYWNrZXRMb2dpblN0YXJ0IiwKICAgICJzZXJ2ZXIudmFuaWxsYS5NaXhpbkNvbnRhaW5lckVuY2hhbnRtZW50IiwKICAgICJzZXJ2ZXIudmFuaWxsYS5NaXhpbkVudGl0eUxpdmluZ0Jhc2UiLAogICAgInNlcnZlci52YW5pbGxhLk1peGluRW50aXR5UGxheWVyTVAiLAogICAgInNlcnZlci52YW5pbGxhLk1peGluSXRlbVNrdWxsIiwKICAgICJzZXJ2ZXIudmFuaWxsYS5NaXhpbk5ldEhhbmRsZXJMb2dpblNlcnZlciIsCiAgICAic2VydmVyLnZhbmlsbGEuTWl4aW5OZXRIYW5kbGVyUGxheVNlcnZlciIsCiAgICAic2VydmVyLnZhbmlsbGEuTWl4aW5XaXRoZXIiCiAgXQp9'
 # ==========================================
 
-# патчер
+def file_sha256(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(65536), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def load_state():
+    if not os.path.exists(STATE_FILE):
+        return {}
+    with open(STATE_FILE, 'r') as f:
+        return json.load(f)
+
+
+def save_state(state):
+    with open(STATE_FILE, 'w') as f:
+        json.dump(state, f, indent=2)
+
+
+def is_already_patched(jar_path, state_key, state):
+    if not os.path.exists(jar_path):
+        return False
+    current_hash = file_sha256(jar_path)
+    saved_hash = state.get(state_key)
+    return saved_hash == current_hash
+
+
+def update_hash(jar_path, state_key, state):
+    state[state_key] = file_sha256(jar_path)
+
+
 def find_dwcity_mod():
-    search_pattern = os.path.join("mods", "DwCity*.jar")
+    search_pattern = os.path.join('mods', 'DwCity*.jar')
     found_files = glob.glob(search_pattern)
     if not found_files:
         return None
@@ -41,10 +74,10 @@ def find_dwcity_mod():
 
 def patch_multiple_files(jar_path, replacements, is_mixin=False):
     if not os.path.exists(jar_path):
-        print(f"Ошибка: Архив '{jar_path}' не найден!")
+        print(f'Ошибка: Архив \'{jar_path}\' не найден!')
         return False
 
-    temp_jar = jar_path + ".tmp"
+    temp_jar = jar_path + '.tmp'
     replaced = set()
 
     with zipfile.ZipFile(jar_path, 'r') as src, \
@@ -54,15 +87,14 @@ def patch_multiple_files(jar_path, replacements, is_mixin=False):
             filename = item.filename
             base = os.path.basename(filename)
 
-
-            if base == "bje.class" and not is_mixin:
-                print("  -> Удалён старый bje.class")
+            if base == 'bje.class' and not is_mixin:
+                print('  -> Удалён старый bje.class')
                 continue
-            
+
             if is_mixin and base in replacements:
                 dst.writestr(filename, replacements[base])
                 replaced.add(base)
-                print(f"  -> Заменён миксин: {filename}")
+                print(f'  -> Заменён миксин: {filename}')
                 continue
 
             with src.open(item) as f:
@@ -71,48 +103,60 @@ def patch_multiple_files(jar_path, replacements, is_mixin=False):
         for name, data in replacements.items():
             if name not in replaced:
                 dst.writestr(name, data)
-                print(f"  -> Добавлен новый файл: {name}")
+                print(f'  -> Добавлен новый файл: {name}')
 
     os.replace(temp_jar, jar_path)
     return True
 
 
 def run_patcher_once():
-    """Запускается один раз перед запуском клиентов"""
-    print("=== ЗАПУСК ПАТЧЕРА ===")
+    print('=== ЗАПУСК ПАТЧЕРА ===')
+
+    state = load_state()
+
+    minecraft_jar = 'minecraft.jar'
+    dwcity_jar = find_dwcity_mod()
 
     bje_bytes = base64.b64decode(BJE_BASE64)
     refmap_bytes = base64.b64decode(REFMAP_JSON_BASE64)
     early_bytes = base64.b64decode(EARLY_JSON_BASE64)
 
-    minecraft_jar = "minecraft.jar"
-    print(f"\n[1/2] Обработка {minecraft_jar}...")
+    print(f'\n[1/2] Проверка {minecraft_jar}...')
 
-    if patch_multiple_files(minecraft_jar, {"bje.class": bje_bytes}, is_mixin=False):
-        print(f" -> Успешно внедрён bje.class в {minecraft_jar}")
+    if is_already_patched(minecraft_jar, 'minecraft', state):
+        print(' -> Уже пропатчен — пропуск')
+    else:
+        print(' -> Патчинг minecraft.jar...')
+        if patch_multiple_files(minecraft_jar, {'bje.class': bje_bytes}, is_mixin=False):
+            update_hash(minecraft_jar, 'minecraft', state)
+            print(' -> Патч применён и хеш сохранён')
 
-    dwcity_jar = find_dwcity_mod()
     if not dwcity_jar:
-        print("\n[2/2] Ошибка: Мод DwCity*.jar не найден в папке 'mods'!")
+        print('\n[2/2] Ошибка: Мод DwCity*.jar не найден!')
         return
 
-    print(f"\n[2/2] Обработка мода: {dwcity_jar}...")
+    print(f'\n[2/2] Проверка {dwcity_jar}...')
 
-    mixin_files = {
-        "mixins.dwcity.refmap.json": refmap_bytes,
-        "mixins.dwcity.early.json": early_bytes
-    }
+    if is_already_patched(dwcity_jar, 'dwcity', state):
+        print(' -> Уже пропатчен — пропуск')
+    else:
+        print(' -> Патчинг DwCity...')
+        mixin_files = {
+            'mixins.dwcity.refmap.json': refmap_bytes,
+            'mixins.dwcity.early.json': early_bytes
+        }
+        if patch_multiple_files(dwcity_jar, mixin_files, is_mixin=True):
+            update_hash(dwcity_jar, 'dwcity', state)
+            print(' -> Миксины обновлены и хеш сохранён')
 
-    if patch_multiple_files(dwcity_jar, mixin_files, is_mixin=True):
-        print(f" -> Успешно обновлены миксины в {os.path.basename(dwcity_jar)}")
-
-    print("\n=== ПАТЧЕР ЗАВЕРШИЛ РАБОТУ ===\n")
+    save_state(state)
+    print('\n Патч завершен \n')
 
 # обновлялка
 def sha1(path: pathlib.Path):
     h = hashlib.sha1()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
+    with path.open('rb') as f:
+        for chunk in iter(lambda: f.read(8192), b''):
             h.update(chunk)
     return h.hexdigest()
 
@@ -127,62 +171,62 @@ def save_hashes(root, hashes):
 
 
 def ensure_libs(root):
-    libs = root / "libraries25"
+    libs = root / 'libraries25'
     if libs.exists():
         return
 
-    print("Загрузка libraries25...")
+    print('Загрузка libraries25...')
     r = requests.get(ZIP_URL, timeout=60)
     r.raise_for_status()
 
     with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-        prefix = next((n for n in z.namelist() if n.endswith("libraries25/")), None)
+        prefix = next((n for n in z.namelist() if n.endswith('libraries25/')), None)
         if not prefix:
-            raise RuntimeError("libraries25 не найдены.")
+            raise RuntimeError('libraries25 не найдены.')
 
         for name in z.namelist():
             if not name.startswith(prefix):
                 continue
             rel = name[len(prefix):]
             target = libs / rel
-            if name.endswith("/"):
+            if name.endswith('/'):
                 target.mkdir(parents=True, exist_ok=True)
             else:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(z.read(name))
 
-    print("libraries загружены.")
+    print('libraries загружены.')
 
 
 def prefix(name):
-    return name.split("-", 1)[0].removesuffix(".jar")
+    return name.split('-', 1)[0].removesuffix('.jar')
 
 
 def delete_mods(root, rel):
-    rel = rel.replace("\\", "/").lstrip("/")
+    rel = rel.replace('\\', '/').lstrip('/')
     folder = root / pathlib.Path(rel).parent
     pfx = prefix(pathlib.Path(rel).name)
 
     if folder.exists():
         for f in folder.iterdir():
-            if f.suffix == ".jar" and prefix(f.name) == pfx:
-                print("Удалено", f)
+            if f.suffix == '.jar' and prefix(f.name) == pfx:
+                print('Удалено', f)
                 f.unlink()
 
 
 def download_mod(root, rel, hashes):
-    rel = rel.replace("\\", "/").lstrip("/")
+    rel = rel.replace('\\', '/').lstrip('/')
     local = root / rel
     local.parent.mkdir(parents=True, exist_ok=True)
 
     if local.exists():
         if hashes.get(rel) == sha1(local):
-            print(local, "is up to date.")
+            print(local, 'is up to date.')
             return
-        print(local, "Изменено, перезагрузка...")
+        print(local, 'Изменено, перезагрузка...')
 
-    url = f"{BASE}/{rel}"
-    print("Загрузка", url)
+    url = f'{BASE}/{rel}'
+    print('Загрузка', url)
 
     r = requests.get(url, timeout=60)
     r.raise_for_status()
@@ -190,7 +234,7 @@ def download_mod(root, rel, hashes):
     local.write_bytes(r.content)
     hashes[rel] = sha1(local)
 
-    print(local, "Обновленно.")
+    print(local, 'Обновленно.')
 
 
 def updates():
@@ -198,34 +242,34 @@ def updates():
     ensure_libs(root)
     hashes = load_hashes(root)
 
-    print("Загрузка updatelist...")
+    print('Загрузка updatelist...')
     lines = requests.get(UPDATELIST, timeout=60).text.splitlines()
 
     for line in lines:
-        if not line.strip() or line.startswith("#"):
+        if not line.strip() or line.startswith('#'):
             continue
 
         rel, action = line.split()[:2]
         action = action.lower()
 
-        if action == "del":
+        if action == 'del':
             delete_mods(root, rel)
-        elif action == "add":
+        elif action == 'add':
             download_mod(root, rel, hashes)
 
     save_hashes(root, hashes)
-    print("Завершено.")
+    print('Завершено.')
 
 # лаунчер
 @dataclass
 class Skin:
     url: str
-    digest_hex: str = ""
+    digest_hex: str = ''
 
 @dataclass
 class Cloak:
     url: str
-    digest_hex: str = ""
+    digest_hex: str = ''
 
 @dataclass
 class PlayerProfile:
@@ -254,78 +298,78 @@ class Params:
     height: int = 0
 
 JVM_ARGS = [
-    "-XX:HeapDumpPath=ThisTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump",
-    "-Djava.system.class.loader=com.gtnewhorizons.retrofuturabootstrap.RfbSystemClassLoader",
-    "--enable-native-access", "ALL-UNNAMED",
-    "--add-opens", "java.base/java.io=ALL-UNNAMED",
-    "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
-    "--add-opens", "java.base/java.lang.ref=ALL-UNNAMED",
-    "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
-    "--add-opens", "java.base/java.lang=ALL-UNNAMED",
-    "--add-opens", "java.base/java.net.spi=ALL-UNNAMED",
-    "--add-opens", "java.base/java.net=ALL-UNNAMED",
-    "--add-opens", "java.base/java.nio.channels=ALL-UNNAMED",
-    "--add-opens", "java.base/java.nio.charset=ALL-UNNAMED",
-    "--add-opens", "java.base/java.nio.file=ALL-UNNAMED",
-    "--add-opens", "java.base/java.nio=ALL-UNNAMED",
-    "--add-opens", "java.base/java.text=ALL-UNNAMED",
-    "--add-opens", "java.base/java.time.chrono=ALL-UNNAMED",
-    "--add-opens", "java.base/java.time.format=ALL-UNNAMED",
-    "--add-opens", "java.base/java.time.temporal=ALL-UNNAMED",
-    "--add-opens", "java.base/java.time.zone=ALL-UNNAMED",
-    "--add-opens", "java.base/java.time=ALL-UNNAMED",
-    "--add-opens", "java.base/java.util.concurrent.atomic=ALL-UNNAMED",
-    "--add-opens", "java.base/java.util.concurrent.locks=ALL-UNNAMED",
-    "--add-opens", "java.base/java.util.jar=ALL-UNNAMED",
-    "--add-opens", "java.base/java.util.zip=ALL-UNNAMED",
-    "--add-opens", "java.base/java.util=ALL-UNNAMED",
-    "--add-opens", "java.base/jdk.internal.loader=ALL-UNNAMED",
-    "--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED",  # ИСПРАВЛЕНО: Добавлен модуль java.base
-    "--add-opens", "java.base/jdk.internal.ref=ALL-UNNAMED",     # ИСПРАВЛЕНО: Добавлен модуль java.base
-    "--add-opens", "java.base/jdk.internal.reflect=ALL-UNNAMED", # ИСПРАВЛЕНО: Добавлен модуль java.base
-    "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",           # ИСПРАВЛЕНО: Добавлен модуль java.base
-    "--add-opens", "java.desktop/com.sun.imageio.plugins.png=ALL-UNNAMED",
-    "--add-opens", "java.desktop/sun.awt.image=ALL-UNNAMED",
-    "--add-opens", "java.desktop/sun.awt=ALL-UNNAMED",
-    "--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
-    "--add-opens", "java.sql.rowset/javax.sql.rowset.serial=ALL-UNNAMED",
-    "--add-opens", "jdk.dynalink/jdk.dynalink.beans=ALL-UNNAMED",
-    "--add-opens", "jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED,java.naming",
-    "-Dauthlib.debug=true",
-    "-XstartOnFirstThread",
-    "-Dfml.ignorePatchDiscrepancies=true",
-    "-Dfml.ignoreInvalidMinecraftCertificates=true",
-    "-Dorg.lwjgl.util.Debug=true",
-    "-Dorg.lwjgl.util.DebugLoader=true",
-    "-Dorg.lwjgl.util.DebugFunctions=true",
-    "-XX:+UnlockExperimentalVMOptions",
-    "-XX:+IgnoreUnrecognizedVMOptions",
-    "-XX:+UseG1GC",
-    "-XX:+UseCompactObjectHeaders",
-    "-XX:+AlwaysPreTouch",
-    "-XX:+ParallelRefProcEnabled",
-    "-XX:+DisableExplicitGC",
-    "-XX:+PerfDisableSharedMem",
-    "-XX:G1NewSizePercent=30",
-    "-XX:G1MaxNewSizePercent=40",
-    "-XX:G1ReservePercent=20",
-    "-XX:G1HeapWastePercent=5",
-    "-XX:MaxGCPauseMillis=50",
-    "-XX:G1HeapRegionSize=16M",
-    "-XX:MaxTenuringThreshold=1",
-    "-XX:+AggressiveOpts",
-    "-XX:+DisableAttachMechanism",
-    "-Dminecraft.api.env=CUSTOM",
-    "-Dminecraft.api.auth=https://auth.mcskill.ru",
-    "-Dminecraft.api.auth.host=https://auth.mcskill.ru/sessionserver",
-    "-Dminecraft.api.account.host=https://auth.mcskill.ru/sessionserver",
-    "-Dminecraft.api.session.host=https://auth.mcskill.ru/sessionserver",
-    "-Dminecraft.api.services.host=https://auth.mcskill.ru/sessionserver",
+    '-XX:HeapDumpPath=ThisTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump',
+    '-Djava.system.class.loader=com.gtnewhorizons.retrofuturabootstrap.RfbSystemClassLoader',
+    '--enable-native-access', 'ALL-UNNAMED',
+    '--add-opens', 'java.base/java.io=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.lang.invoke=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.lang.ref=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.net.spi=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.net=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.nio.channels=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.nio.charset=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.nio.file=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.nio=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.text=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.time.chrono=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.time.format=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.time.temporal=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.time.zone=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.time=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.util.concurrent.atomic=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.util.concurrent.locks=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.util.jar=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.util.zip=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+    '--add-opens', 'java.base/jdk.internal.loader=ALL-UNNAMED',
+    '--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED',  # ИСПРАВЛЕНО: Добавлен модуль java.base
+    '--add-opens', 'java.base/jdk.internal.ref=ALL-UNNAMED',     # ИСПРАВЛЕНО: Добавлен модуль java.base
+    '--add-opens', 'java.base/jdk.internal.reflect=ALL-UNNAMED', # ИСПРАВЛЕНО: Добавлен модуль java.base
+    '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED',           # ИСПРАВЛЕНО: Добавлен модуль java.base
+    '--add-opens', 'java.desktop/com.sun.imageio.plugins.png=ALL-UNNAMED',
+    '--add-opens', 'java.desktop/sun.awt.image=ALL-UNNAMED',
+    '--add-opens', 'java.desktop/sun.awt=ALL-UNNAMED',
+    '--add-opens', 'java.desktop/sun.lwawt.macosx=ALL-UNNAMED',
+    '--add-opens', 'java.sql.rowset/javax.sql.rowset.serial=ALL-UNNAMED',
+    '--add-opens', 'jdk.dynalink/jdk.dynalink.beans=ALL-UNNAMED',
+    '--add-opens', 'jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED,java.naming',
+    '-Dauthlib.debug=true',
+    '-XstartOnFirstThread',
+    '-Dfml.ignorePatchDiscrepancies=true',
+    '-Dfml.ignoreInvalidMinecraftCertificates=true',
+    '-Dorg.lwjgl.util.Debug=true',
+    '-Dorg.lwjgl.util.DebugLoader=true',
+    '-Dorg.lwjgl.util.DebugFunctions=true',
+    '-XX:+UnlockExperimentalVMOptions',
+    '-XX:+IgnoreUnrecognizedVMOptions',
+    '-XX:+UseG1GC',
+    '-XX:+UseCompactObjectHeaders',
+    '-XX:+AlwaysPreTouch',
+    '-XX:+ParallelRefProcEnabled',
+    '-XX:+DisableExplicitGC',
+    '-XX:+PerfDisableSharedMem',
+    '-XX:G1NewSizePercent=30',
+    '-XX:G1MaxNewSizePercent=40',
+    '-XX:G1ReservePercent=20',
+    '-XX:G1HeapWastePercent=5',
+    '-XX:MaxGCPauseMillis=50',
+    '-XX:G1HeapRegionSize=16M',
+    '-XX:MaxTenuringThreshold=1',
+    '-XX:+AggressiveOpts',
+    '-XX:+DisableAttachMechanism',
+    '-Dminecraft.api.env=CUSTOM',
+    '-Dminecraft.api.auth=https://auth.mcskill.ru',
+    '-Dminecraft.api.auth.host=https://auth.mcskill.ru/sessionserver',
+    '-Dminecraft.api.account.host=https://auth.mcskill.ru/sessionserver',
+    '-Dminecraft.api.session.host=https://auth.mcskill.ru/sessionserver',
+    '-Dminecraft.api.services.host=https://auth.mcskill.ru/sessionserver',
 ]
 
 def version_ge(v: str, target: str) -> bool:
     def split(ver: str) -> List[int]:
-        return [int(x) for x in ver.split(".")]
+        return [int(x) for x in ver.split('.')]
     a = split(v)
     b = split(target)
     max_len = max(len(a), len(b))
@@ -338,57 +382,57 @@ def add_client_args(client_profile: ClientProfile, params: Params) -> List[str]:
     v = client_profile.version
     args: List[str] = []
 
-    args += ["--username", p.username]
+    args += ['--username', p.username]
 
-    if version_ge(v, "1.7.2"):
-        args += ["--uuid", p.uuid]
-        args += ["--accessToken", params.access_token]
+    if version_ge(v, '1.7.2'):
+        args += ['--uuid', p.uuid]
+        args += ['--accessToken', params.access_token]
 
-        if version_ge(v, "1.7.3"):
-            if version_ge(v, "1.7.4"):
-                args += ["--userType", "mojang"]
+        if version_ge(v, '1.7.3'):
+            if version_ge(v, '1.7.4'):
+                args += ['--userType', 'mojang']
 
             user_props = {}
             if p.skin:
-                user_props["skinURL"] = [p.skin.url]
+                user_props['skinURL'] = [p.skin.url]
             if p.cloak:
-                user_props["cloakURL"] = [p.cloak.url]
+                user_props['cloakURL'] = [p.cloak.url]
 
-            args += ["--userProperties", json.dumps(user_props)]
-            args += ["--assetIndex", client_profile.asset_index]
+            args += ['--userProperties', json.dumps(user_props)]
+            args += ['--assetIndex', client_profile.asset_index]
     else:
-        args += ["--session", params.access_token]
+        args += ['--session', params.access_token]
 
-    args += ["--version", client_profile.version]
-    args += ["--gameDir", str(params.client_dir)]
-    args += ["--assetsDir", str(params.asset_dir)]
-    args += ["--resourcePackDir", str(params.client_dir / "resourcepacks")]
+    args += ['--version', client_profile.version]
+    args += ['--gameDir', str(params.client_dir)]
+    args += ['--assetsDir', str(params.asset_dir)]
+    args += ['--resourcePackDir', str(params.client_dir / 'resourcepacks')]
 
     if params.auto_enter and client_profile.server_address:
-        args += ["--server", client_profile.server_address]
-        args += ["--port", str(client_profile.server_port)]
+        args += ['--server', client_profile.server_address]
+        args += ['--port', str(client_profile.server_port)]
 
     if params.full_screen:
-        args += ["--fullscreen", "true"]
+        args += ['--fullscreen', 'true']
 
     if params.width > 0 and params.height > 0:
-        args += ["--width", str(params.width)]
-        args += ["--height", str(params.height)]
+        args += ['--width', str(params.width)]
+        args += ['--height', str(params.height)]
 
     args += client_profile.client_args
     return args
 
 def build_classpath(client_dir: Path) -> str:
-    classpath_file = client_dir / "classpath.txt"
+    classpath_file = client_dir / 'classpath.txt'
     jars = []
-    for raw in classpath_file.read_text(encoding="utf-8").splitlines():
+    for raw in classpath_file.read_text(encoding='utf-8').splitlines():
         line = raw.strip()
         if not line:
             continue
-        line = line.lstrip("\\").replace("\\", "/")
+        line = line.lstrip('\\').replace('\\', '/')
         jar_path = (client_dir / line).resolve()
         jars.append(str(jar_path))
-    return ";".join(jars)
+    return ';'.join(jars)
 
 
 def launch_minecraft(
@@ -398,40 +442,40 @@ def launch_minecraft(
     natives_dir: Path,
     classpath: str,
     jvm_memory_mb: int,
-    main_class: str = "com.gtnewhorizons.retrofuturabootstrap.MainStartOnFirstThread",
+    main_class: str = 'com.gtnewhorizons.retrofuturabootstrap.MainStartOnFirstThread',
 ):
     mc_args = add_client_args(client_profile, params)
 
     dynamic_jvm_args = [
-        f"-Xms{jvm_memory_mb}M",
-        f"-Xmx{jvm_memory_mb}M",
-        f"-Djava.library.path={natives_dir}",
-        f"-Dorg.lwjgl.librarypath={natives_dir}",
+        f'-Xms{jvm_memory_mb}M',
+        f'-Xmx{jvm_memory_mb}M',
+        f'-Djava.library.path={natives_dir}',
+        f'-Dorg.lwjgl.librarypath={natives_dir}',
     ]
 
-    full_args = [*dynamic_jvm_args, *JVM_ARGS, "-cp", classpath, main_class, *mc_args]
+    full_args = [*dynamic_jvm_args, *JVM_ARGS, '-cp', classpath, main_class, *mc_args]
 
-    args_file_fd, args_file_path = tempfile.mkstemp(prefix=f"mc-{params.pp.username}-", suffix=".args", text=True)
-    with os.fdopen(args_file_fd, "w", encoding="utf-8") as f:
+    args_file_fd, args_file_path = tempfile.mkstemp(prefix=f'mc-{params.pp.username}-', suffix='.args', text=True)
+    with os.fdopen(args_file_fd, 'w', encoding='utf-8') as f:
         for arg in full_args:
             escaped_arg = arg.replace('\\', '\\\\').replace('"', '\\"')
-            f.write(f'"{escaped_arg}"\n')
+            f.write(f'{escaped_arg}\n')
 
-    cmd = [str(java_path), f"@{args_file_path}"]
-    print(f"[{params.pp.username}] Запуск... (файл аргументов: {args_file_path})\n")
+    cmd = [str(java_path), f'@{args_file_path}']
+    print(f'[{params.pp.username}] Запуск... (файл аргументов: {args_file_path})\n')
 
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        encoding="utf-8",
-        errors="replace",
+        encoding='utf-8',
+        errors='replace',
         bufsize=1
     )
 
     try:
         for line in proc.stdout:
-            sys.stdout.write(f"[{params.pp.username}] {line}")
+            sys.stdout.write(f'[{params.pp.username}] {line}')
     except KeyboardInterrupt:
         proc.kill()
     finally:
@@ -449,15 +493,15 @@ def run_all_clients(logins: Dict[str, str], total_ram_mb: int, java_path: Path, 
 
     for username, password in logins.items():
         result = send_request(username, password)
-        errors = {"MFA required": "Подтвердите вход в телеграмм", "bad_password": "Неверный пароль", "UNKNOWN": "Неизвестный ответ"}
+        errors = {'MFA required': 'Подтвердите вход в телеграмм', 'bad_password': 'Неверный пароль', 'UNKNOWN': 'Неизвестный ответ'}
         if isinstance(result, dict):
-            print(f"[{username}] Ошибка входа: {errors.get(result.get('error') or 'UNKNOWN')}")
+            print(f'[{username}] Ошибка входа: {errors.get(result.get('error') or 'UNKNOWN')}')
             continue
         profile, token = result
-        skin = Skin(url=f"https://skins.mcskill.net/MinecraftSkins/{profile.username}.png")
-        cloak = Cloak(url=f"https://skins.mcskill.net/MinecraftCloaks/{profile.username}.png")
+        skin = Skin(url=f'https://skins.mcskill.net/MinecraftSkins/{profile.username}.png')
+        cloak = Cloak(url=f'https://skins.mcskill.net/MinecraftCloaks/{profile.username}.png')
         player = PlayerProfile(username=profile.username, uuid=str(profile.uuid), skin=skin, cloak=cloak)
-        client_profile = ClientProfile(version="1.7.10", asset_index="1.7.10", client_args=["--tweakClass", "cpw.mods.fml.common.launcher.FMLTweaker"])
+        client_profile = ClientProfile(version='1.7.10', asset_index='1.7.10', client_args=['--tweakClass', 'cpw.mods.fml.common.launcher.FMLTweaker'])
         params = Params(pp=player, access_token=token, client_dir=client_dir, asset_dir=asset_dir)
         p = multiprocessing.Process(target=launch_minecraft, args=(java_path, client_profile, params, natives_dir, classpath, ram_per_client))
         p.start()
@@ -466,32 +510,32 @@ def run_all_clients(logins: Dict[str, str], total_ram_mb: int, java_path: Path, 
         p.join()
 
 def load_config():
-    path = Path("config.json")
+    path = Path('config.json')
     DEFAULT_CONFIG = {
-        "__comment__path": "Пути к клиенту",
-        "java_path": "C:\\Users\\User\\McSkill\\java\\25-temurin\\bin\\java.exe",
-        "asset_dir": "C:\\Users\\User\\McSkill\\assets\\assets1.7.10",
+        '__comment__path': 'Пути к клиенту',
+        'java_path': 'C:\\Users\\User\\McSkill\\java\\25-temurin\\bin\\java.exe',
+        'asset_dir': 'C:\\Users\\User\\McSkill\\assets\\assets1.7.10',
 
-        "__comment__ram": "Общее количество оперативной памяти, выделяемое для всех клиентов.",
-        "total_ram_mb": 4096,
+        '__comment__ram': 'Общее количество оперативной памяти, выделяемое для всех клиентов.',
+        'total_ram_mb': 4096,
 
-        "__comment__accounts": "Аккаунты указываются в формате: имя_аккаунта:пароль.",
-        "accounts": {
-            "nick": "pass"
+        '__comment__accounts': 'Аккаунты указываются в формате: имя_аккаунта:пароль.',
+        'accounts': {
+            'nick': 'pass'
         }
     }
     if not path.exists():
-        with open(path, "w", encoding="utf-8") as f:
+        with open(path, 'w', encoding='utf-8') as f:
             json.dump(DEFAULT_CONFIG, f, indent=4, ensure_ascii=False)
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     updates()
     run_patcher_once()
     multiprocessing.freeze_support() 
     cfg = load_config()
     client_dir = Path.cwd()
-    natives_dir = client_dir / "natives"
+    natives_dir = client_dir / 'natives'
 
-    run_all_clients(cfg["accounts"], cfg["total_ram_mb"], Path(cfg["java_path"]), client_dir, Path(cfg["asset_dir"]), natives_dir)
+    run_all_clients(cfg['accounts'], cfg['total_ram_mb'], Path(cfg['java_path']), client_dir, Path(cfg['asset_dir']), natives_dir)
