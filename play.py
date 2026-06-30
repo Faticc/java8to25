@@ -560,6 +560,32 @@ def load_config():
             json.dump(DEFAULT_CONFIG, f, indent=4, ensure_ascii=False)
     with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
+    
+
+def choose_accounts(accounts: dict):
+    names = list(accounts.keys())
+    if len(names) == 1:
+        print(f"Найден один аккаунт: {names[0]}. Запуск автоматически.")
+        return [names[0]]
+    print("\nВыберите аккаунты для запуска:")
+    for i, name in enumerate(names, start=1):
+        print(f"{i}. {name}")
+    print(f"{len(names)+1}. Все аккаунты")
+    print("Введите номера через без пробелов, например: 12 (запустит 1 и 2)")
+    choice = input("Ваш выбор: ").strip()
+    if choice == str(len(names) + 1):
+        return names
+    selected = []
+    for ch in choice:
+        if ch.isdigit():
+            idx = int(ch)
+            if 1 <= idx <= len(names):
+                selected.append(names[idx - 1])
+    if not selected:
+        print("Ошибка: не выбрано ни одного аккаунта.")
+        exit(1)
+    return selected
+
 
 if __name__ == '__main__':
     updates()
@@ -569,4 +595,13 @@ if __name__ == '__main__':
     client_dir = Path.cwd()
     natives_dir = client_dir / 'natives25'
 
-    run_all_clients(cfg['accounts'], cfg['total_ram_mb'], Path(cfg['java_path']), client_dir, Path(cfg['asset_dir']), natives_dir)
+    selected_accounts = choose_accounts(cfg['accounts'])
+
+    run_all_clients(
+        {acc: cfg['accounts'][acc] for acc in selected_accounts},
+        cfg['total_ram_mb'],
+        Path(cfg['java_path']),
+        client_dir,
+        Path(cfg['asset_dir']),
+        natives_dir
+    )
