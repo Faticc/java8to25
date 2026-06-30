@@ -250,7 +250,6 @@ def ensure_natives(root):
     print("natives загружены.")
 
 
-
 def prefix(name):
     return name.split('-', 1)[0].removesuffix('.jar')
 
