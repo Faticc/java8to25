@@ -18,16 +18,16 @@ clients = {
     "3": "TechnoMagic_1.7.10"
 }
 
-# ---------------------------------------------------------
-# 2. Ввод параметров
-# ---------------------------------------------------------
-
 def ask_int(prompt):
     try:
         return int(input(prompt))
     except ValueError:
         print("Ошибка: нужно целое число.")
         exit(1)
+
+# ---------------------------------------------------------
+# 2. Ввод параметров
+# ---------------------------------------------------------
 
 RAM = ask_int("Введите общее количество оперативной памяти (в ГБ): ")
 COUNT_CLIENTS = ask_int("Введите количество клиентов: ")
@@ -73,60 +73,90 @@ print(f"\nВыбран клиент: {client}")
 print(f"Путь: {client_path}")
 
 # ---------------------------------------------------------
-# 5. Сохранение config.json
+# 5. Проверка существования клиента
 # ---------------------------------------------------------
 
-with open("config.json", "w", encoding="utf-8") as f:
+if not client_path.exists():
+    print("Клиент отсутствует — создаю папку...")
+    client_path.mkdir(parents=True, exist_ok=True)
+else:
+    print("Клиент уже существует — пропускаю создание папки.")
+
+# ---------------------------------------------------------
+# 6. Сохранение config.json
+# ---------------------------------------------------------
+
+config_path = Path("config.json")
+if config_path.exists():
+    print("config.json уже существует — перезаписываю.")
+else:
+    print("Создаю config.json...")
+
+with open(config_path, "w", encoding="utf-8") as f:
     json.dump(config, f, indent=4, ensure_ascii=False)
 
-print("Конфигурационный файл успешно создан!")
+print("config.json готов!")
 
 # ---------------------------------------------------------
-# 6. Создание venv
+# 7. Создание venv
 # ---------------------------------------------------------
 
 venv_path = client_path / "venv"
-print("\nСоздаю виртуальное окружение...")
+if not venv_path.exists():
+    print("Создаю виртуальное окружение...")
+    subprocess.run(["python", "-m", "venv", str(venv_path)], check=True)
+    print("venv создан!")
+else:
+    print("venv уже существует — пропускаю.")
 
-subprocess.run(["python", "-m", "venv", str(venv_path)], check=True)
 pip_path = venv_path / "Scripts" / "pip.exe"
 python_path = venv_path / "Scripts" / "python.exe"
 
-print("venv создан!")
-
 # ---------------------------------------------------------
-# 7. Скачивание play.py
+# 8. Скачивание play.py
 # ---------------------------------------------------------
 
 play_url = "https://raw.githubusercontent.com/Faticc/java8to25/refs/heads/main/play.py"
 play_path = client_path / "play.py"
 
-print("Скачиваю play.py...")
-urllib.request.urlretrieve(play_url, play_path)
-print("play.py скачан!")
+if not play_path.exists():
+    print("Скачиваю play.py...")
+    urllib.request.urlretrieve(play_url, play_path)
+    print("play.py скачан!")
+else:
+    print("play.py уже существует — пропускаю.")
 
 # ---------------------------------------------------------
-# 8. Установка зависимостей
+# 9. Скачивание requirements.txt
 # ---------------------------------------------------------
 
 req_url = "https://raw.githubusercontent.com/Faticc/java8to25/blob/main/requirements.txt"
 req_path = client_path / "requirements.txt"
 
-print("Скачиваю requirements.txt...")
-urllib.request.urlretrieve(req_url, req_path)
-print("✔ requirements.txt скачан!")
-
-print("Устанавливаю зависимости...")
-subprocess.run([str(pip_path), "install", "-r", str(req_path)], check=True)
-print("✔ Зависимости установлены!")
+if not req_path.exists():
+    print("Скачиваю requirements.txt...")
+    urllib.request.urlretrieve(req_url, req_path)
+    print("requirements.txt скачан!")
+else:
+    print("requirements.txt уже существует — пропускаю.")
 
 # ---------------------------------------------------------
-# 9. Создание run.bat
+# 10. Установка зависимостей
+# ---------------------------------------------------------
+
+print("Проверяю зависимости...")
+subprocess.run([str(pip_path), "install", "-r", str(req_path)], check=True)
+print("Зависимости установлены!")
+
+# ---------------------------------------------------------
+# 11. Создание run.bat
 # ---------------------------------------------------------
 
 run_bat_path = client_path / "run.bat"
 
-run_bat_content = """@echo off
+if not run_bat_path.exists():
+    print("Создаю run.bat...")
+    run_bat_content = """@echo off
 chcp 65001 >nul
 title Running Client...
 
@@ -136,25 +166,27 @@ call "venv\\Scripts\\activate.bat"
 python play.py
 pause
 """
-
-with open(run_bat_path, "w", encoding="utf-8") as f:
-    f.write(run_bat_content)
-
-print("✔ run.bat создан!")
+    with open(run_bat_path, "w", encoding="utf-8") as f:
+        f.write(run_bat_content)
+    print("run.bat создан!")
+else:
+    print("run.bat уже существует — пропускаю.")
 
 # ---------------------------------------------------------
-# 10. Завершение
+# 12. Создание ярлыка
 # ---------------------------------------------------------
-
-print("\nУстановка завершена! Клиент полностью готов к запуску.")
-
 
 desktop = Path(os.path.join(os.environ["USERPROFILE"], "Desktop"))
 shortcut_path = desktop / f"{client}.lnk"
 
-vbs_path = client_path / "create_shortcut.vbs"
+if shortcut_path.exists():
+    print("Ярлык уже существует — пропускаю.")
+else:
+    print("Создаю ярлык на рабочем столе...")
 
-vbs_content = f'''
+    vbs_path = client_path / "create_shortcut.vbs"
+
+    vbs_content = f'''
 Set oWS = WScript.CreateObject("WScript.Shell")
 sLinkFile = "{shortcut_path}"
 Set oLink = oWS.CreateShortcut(sLinkFile)
@@ -164,11 +196,16 @@ oLink.IconLocation = "{run_bat_path}"
 oLink.Save
 '''
 
-with open(vbs_path, "w", encoding="utf-8") as f:
-    f.write(vbs_content)
+    with open(vbs_path, "w", encoding="utf-8") as f:
+        f.write(vbs_content)
 
-subprocess.run(["wscript.exe", str(vbs_path)], check=True)
+    subprocess.run(["wscript.exe", str(vbs_path)], check=True)
+    os.remove(vbs_path)
 
-os.remove(vbs_path)
+    print("Ярлык создан!")
 
-print("Ярлык создан на рабочем столе!")
+# ---------------------------------------------------------
+# 13. Завершение
+# ---------------------------------------------------------
+
+print("\nУстановка завершена! Клиент полностью готов к запуску.")
