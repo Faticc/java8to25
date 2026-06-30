@@ -16,3 +16,4 @@ echo Cleaning up...
 del install_tmp.py
 
 echo Done.
+pause
