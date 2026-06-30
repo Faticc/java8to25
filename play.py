@@ -466,7 +466,24 @@ def run_all_clients(logins: Dict[str, str], total_ram_mb: int, java_path: Path, 
         p.join()
 
 def load_config():
-    with open("config.json", "r", encoding="utf-8") as f:
+    path = Path("config.json")
+    DEFAULT_CONFIG = {
+        "__comment__path": "Пути к клиенту",
+        "java_path": "C:\\Users\\User\\McSkill\\java\\25-temurin\\bin\\java.exe",
+        "asset_dir": "C:\\Users\\User\\McSkill\\assets\\assets1.7.10",
+
+        "__comment__ram": "Общее количество оперативной памяти, выделяемое для всех клиентов.",
+        "total_ram_mb": 4096,
+
+        "__comment__accounts": "Аккаунты указываются в формате: имя_аккаунта:пароль.",
+        "accounts": {
+            "nick": "pass"
+        }
+    }
+    if not path.exists():
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(DEFAULT_CONFIG, f, indent=4, ensure_ascii=False)
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 if __name__ == "__main__":
