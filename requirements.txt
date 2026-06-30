@@ -1,0 +1,9 @@
+auth @ git+https://github.com/Faticc/auth.git
+certifi==2026.6.17
+charset-normalizer==3.4.7
+grpcio==1.81.1
+idna==3.18
+protobuf==7.35.1
+requests==2.34.2
+typing_extensions==4.15.0
+urllib3==2.7.0

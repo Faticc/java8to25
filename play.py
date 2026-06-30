@@ -3,7 +3,6 @@ import subprocess
 import requests
 import tempfile
 import zipfile
-import pathlib
 import hashlib
 import base64
 import json
@@ -153,7 +152,7 @@ def run_patcher_once():
     print('\n Патч завершен \n')
 
 # обновлялка
-def sha1(path: pathlib.Path):
+def sha1(path: Path):
     h = hashlib.sha1()
     with path.open('rb') as f:
         for chunk in iter(lambda: f.read(8192), b''):
@@ -232,8 +231,8 @@ def prefix(name):
 
 def delete_mods(root, rel):
     rel = rel.replace('\\', '/').lstrip('/')
-    folder = root / pathlib.Path(rel).parent
-    pfx = prefix(pathlib.Path(rel).name)
+    folder = root / Path(rel).parent
+    pfx = prefix(Path(rel).name)
 
     if folder.exists():
         for f in folder.iterdir():
@@ -266,7 +265,7 @@ def download_mod(root, rel, hashes):
 
 
 def updates():
-    root = pathlib.Path.cwd()
+    root = Path.cwd()
     ensure_libs(root)
     ensure_natives(root)
     hashes = load_hashes(root)
@@ -503,8 +502,11 @@ def launch_minecraft(
     )
 
     try:
-        for line in proc.stdout:
-            sys.stdout.write(f'[{params.pp.username}] {line}')
+        if proc.stdout is not None:
+            for line in proc.stdout:
+                sys.stdout.write(f'[{params.pp.username}] {line}')
+            else:
+                sys.stdout.write(f'[{params.pp.username}] <no stdout>\n')
     except KeyboardInterrupt:
         proc.kill()
     finally:
