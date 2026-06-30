@@ -578,7 +578,10 @@ def load_config():
         '__comment__accounts': 'Аккаунты указываются в формате: имя_аккаунта:пароль.',
         'accounts': {
             'nick': 'pass'
-        }
+        },
+
+        "__comment_speed": "Быстрая скорость копания: True/False",
+        "mining_speed": False
     }
     if not path.exists():
         with open(path, 'w', encoding='utf-8') as f:
@@ -614,9 +617,11 @@ def choose_accounts(accounts: dict):
 
 if __name__ == '__main__':
     updates()
-    run_patcher_once()
-    multiprocessing.freeze_support() 
     cfg = load_config()
+    if cfg['mining_speed']:
+        run_patcher_once()
+    multiprocessing.freeze_support() 
+
     client_dir = Path.cwd()
     natives_dir = client_dir / 'natives25'
 

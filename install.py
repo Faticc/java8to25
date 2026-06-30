@@ -60,10 +60,13 @@ config = {
     "total_ram_mb": RAM * 1024,
 
     "__comment__accounts": "Аккаунты указываются в формате: имя_аккаунта:пароль.",
-    "accounts": {}
+    "accounts": {},
+
+    "__comment_speed": "Быстрая скорость копания: True/False",
+    "mining_speed": False
 }
 
-for i in range(COUNT_CLIENTS):
+for i in range(int(COUNT_CLIENTS)):
     name = ask_input(f"Введите имя аккаунта {i+1}: ")
     password = getpass.getpass(f"Введите пароль для аккаунта {name}: ")
     config["accounts"][name] = password
