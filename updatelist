@@ -13,3 +13,4 @@
 \auth\common_pb2.py add
 \common_pb2_grpc.py add
 \auth\__init__.py add
+\play.py
