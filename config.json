@@ -1,0 +1,14 @@
+{
+    "__comment__path": "Пути к клиенту",
+    "java_path": "C:\\Users\\User\\McSkill\\java\\25-temurin\\bin\\java.exe",
+    "asset_dir": "C:\\Users\\User\\McSkill\\assets\\assets1.7.10",
+
+    "__comment__ram": "Общее количество оперативной памяти, выделяемое для всех клиентов.",
+    "total_ram_mb": 8192,
+
+    "__comment__accounts": "Аккаунты указываются в формате: имя_аккаунта:пароль.",
+    "accounts": {
+        "nick": "pass"
+    }
+}
+
