@@ -4,6 +4,27 @@ import getpass
 import subprocess
 import urllib.request
 from pathlib import Path
+import sys
+
+# ---------------------------------------------------------
+# 0. Универсальная функция ввода с возможностью выхода
+# ---------------------------------------------------------
+
+def ask_input(prompt, cast=None):
+    while True:
+        value = input(prompt).strip()
+
+        if value.lower() in ("exit", "выход", "quit", "q"):
+            print("Выход из программы...")
+            sys.exit(0)
+
+        if cast:
+            try:
+                return cast(value)
+            except ValueError:
+                print("Ошибка: неверный формат. Попробуйте снова.")
+        else:
+            return value
 
 # ---------------------------------------------------------
 # 1. Базовые параметры
@@ -18,20 +39,12 @@ clients = {
     "3": "TechnoMagic_1.7.10"
 }
 
-def ask_int(prompt):
-    while True:
-        value = input(prompt)
-        try:
-            return int(value)
-        except ValueError:
-            print("Ошибка: нужно целое число.")
-
 # ---------------------------------------------------------
 # 2. Ввод параметров
 # ---------------------------------------------------------
 
-RAM = ask_int("Введите общее количество оперативной памяти (в ГБ): ")
-COUNT_CLIENTS = ask_int("Введите количество клиентов: ")
+RAM = ask_input("Введите общее количество оперативной памяти (в ГБ): ", int)
+COUNT_CLIENTS = ask_input("Введите количество клиентов: ", int)
 
 # ---------------------------------------------------------
 # 3. Формирование config.json
@@ -50,7 +63,7 @@ config = {
 }
 
 for i in range(COUNT_CLIENTS):
-    name = input(f"Введите имя аккаунта {i+1}: ")
+    name = ask_input(f"Введите имя аккаунта {i+1}: ")
     password = getpass.getpass(f"Введите пароль для аккаунта {name}: ")
     config["accounts"][name] = password
 
@@ -62,12 +75,12 @@ print("\n--- Выберите клиент ---")
 for key, val in clients.items():
     print(f"{key}. {val}")
 
-choice = input("Введите номер клиента (1-3): ")
+choice = ask_input("Введите номер клиента (1-3): ")
 client = clients.get(choice)
 
 if not client:
     print("Ошибка: неверный номер клиента.")
-    exit(1)
+    sys.exit(1)
 
 client_path = base_dir / "clients" / client
 print(f"\nВыбран клиент: {client}")
@@ -79,19 +92,14 @@ print(f"Путь: {client_path}")
 
 if not client_path.exists():
     print("Клиент не найден.")
-    exit(1)
-else:
-    pass
+    sys.exit(1)
 
 # ---------------------------------------------------------
 # 6. Сохранение config.json
 # ---------------------------------------------------------
 
 config_path = Path("config.json")
-if config_path.exists():
-    print("config.json уже существует — перезаписываю.")
-else:
-    print("Создаю config.json...")
+print("Создаю или перезаписываю config.json...")
 
 with open(config_path, "w", encoding="utf-8") as f:
     json.dump(config, f, indent=4, ensure_ascii=False)
@@ -131,7 +139,7 @@ else:
 # 9. Скачивание requirements.txt
 # ---------------------------------------------------------
 
-req_url = "https://raw.githubusercontent.com/Faticc/java8to25/blob/main/requirements.txt"
+req_url = "https://raw.githubusercontent.com/Faticc/java8to25/refs/heads/main/requirements.txt"
 req_path = client_path / "requirements.txt"
 
 if not req_path.exists():
