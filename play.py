@@ -198,6 +198,34 @@ def ensure_libs(root):
     print('libraries загружены.')
 
 
+def ensure_natives(root):
+    natives = root / 'natives25'
+    if natives.exists():
+        return
+
+    print('Загрузка natives25...')
+    r = requests.get(ZIP_URL, timeout=60)
+    r.raise_for_status()
+
+    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+        prefix = next((n for n in z.namelist() if n.endswith('natives25/')), None)
+        if not prefix:
+            raise RuntimeError('natives25 не найдены.')
+
+        for name in z.namelist():
+            if not name.startswith(prefix):
+                continue
+            rel = name[len(prefix):]
+            target = natives / rel
+            if name.endswith('/'):
+                target.mkdir(parents=True, exist_ok=True)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(z.read(name))
+
+    print('natives загружены.')
+
+
 def prefix(name):
     return name.split('-', 1)[0].removesuffix('.jar')
 
@@ -240,6 +268,7 @@ def download_mod(root, rel, hashes):
 def updates():
     root = pathlib.Path.cwd()
     ensure_libs(root)
+    ensure_natives(root)
     hashes = load_hashes(root)
 
     print('Загрузка updatelist...')
@@ -536,6 +565,6 @@ if __name__ == '__main__':
     multiprocessing.freeze_support() 
     cfg = load_config()
     client_dir = Path.cwd()
-    natives_dir = client_dir / 'natives'
+    natives_dir = client_dir / 'natives25'
 
     run_all_clients(cfg['accounts'], cfg['total_ram_mb'], Path(cfg['java_path']), client_dir, Path(cfg['asset_dir']), natives_dir)
