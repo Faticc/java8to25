@@ -79,7 +79,7 @@ print(f"Путь: {client_path}")
 with open("config.json", "w", encoding="utf-8") as f:
     json.dump(config, f, indent=4, ensure_ascii=False)
 
-print("✔ Конфигурационный файл успешно создан!")
+print("Конфигурационный файл успешно создан!")
 
 # ---------------------------------------------------------
 # 6. Создание venv
@@ -92,7 +92,7 @@ subprocess.run(["python", "-m", "venv", str(venv_path)], check=True)
 pip_path = venv_path / "Scripts" / "pip.exe"
 python_path = venv_path / "Scripts" / "python.exe"
 
-print("✔ venv создан!")
+print("venv создан!")
 
 # ---------------------------------------------------------
 # 7. Скачивание play.py
@@ -103,7 +103,7 @@ play_path = client_path / "play.py"
 
 print("Скачиваю play.py...")
 urllib.request.urlretrieve(play_url, play_path)
-print("✔ play.py скачан!")
+print("play.py скачан!")
 
 # ---------------------------------------------------------
 # 8. Установка зависимостей
@@ -147,3 +147,28 @@ print("✔ run.bat создан!")
 # ---------------------------------------------------------
 
 print("\nУстановка завершена! Клиент полностью готов к запуску.")
+
+
+desktop = Path(os.path.join(os.environ["USERPROFILE"], "Desktop"))
+shortcut_path = desktop / f"{client}.lnk"
+
+vbs_path = client_path / "create_shortcut.vbs"
+
+vbs_content = f'''
+Set oWS = WScript.CreateObject("WScript.Shell")
+sLinkFile = "{shortcut_path}"
+Set oLink = oWS.CreateShortcut(sLinkFile)
+oLink.TargetPath = "{run_bat_path}"
+oLink.WorkingDirectory = "{client_path}"
+oLink.IconLocation = "{run_bat_path}"
+oLink.Save
+'''
+
+with open(vbs_path, "w", encoding="utf-8") as f:
+    f.write(vbs_content)
+
+subprocess.run(["wscript.exe", str(vbs_path)], check=True)
+
+os.remove(vbs_path)
+
+print("Ярлык создан на рабочем столе!")
