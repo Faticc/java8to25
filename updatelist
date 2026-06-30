@@ -2,9 +2,9 @@
 \mods\1.7.10\CodeChickenCore-1.4.13.jar del
 \mods\coretweaks-0.3.4.5-GTNH.jar del 
 \mods\inventorytweaks-1.7.1.jar del
-\mods\++unimixins-all-1.7.10-0.1.23.jar add 99e83da1b2167e644f0ed97aff3e79a4676f5640
-\mods\1.7.10\CodeChickenCore-1.4.1.jar add 00183e53e1d59b60a7d35ef3afbb2687968edeac
-\mods\archaicfix-0.7.9.jar add 214d771970c19b54356a575131f3499b54d55cc4
-\mods\coretweaks-0.3.4.5-GTNH-git.1+54605475d2-dirty.jar add c2db48724d520db6d67c33299e807debf125305a
-\mods\jarjar-0.3.3-beta.jar add 77187766d8083c2944c9bcdf1ecf329212682caa
-\mods\lwjgl3ify-3.0.20.jar add 94879e1c20a38e19dec392d2238efe64728dcf33
+\mods\++unimixins-all-1.7.10-0.1.23.jar add
+\mods\1.7.10\CodeChickenCore-1.4.1.jar add
+\mods\archaicfix-0.7.9.jar add
+\mods\coretweaks-0.3.4.5-GTNH-git.1+54605475d2-dirty.jar add
+\mods\jarjar-0.3.3-beta.jar add
+\mods\lwjgl3ify-3.0.20.jar add
