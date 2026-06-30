@@ -169,11 +169,15 @@ def save_hashes(root, hashes):
     (root / HASH_FILE).write_text(json.dumps(hashes, indent=2))
 
 
+def percent(i, total):
+    p = int(i / total * 100)
+    print(f"\r{p}%", end="")
+
+
 def ensure_libs(root):
     libs = root / 'libraries25'
     if libs.exists():
         return
-
     print('Загрузка libraries25...')
     r = requests.get(ZIP_URL, timeout=60)
     r.raise_for_status()
@@ -183,25 +187,27 @@ def ensure_libs(root):
         if not prefix:
             raise RuntimeError('libraries25 не найдены.')
 
-        for name in z.namelist():
-            if not name.startswith(prefix):
-                continue
+        names = [n for n in z.namelist() if n.startswith(prefix)]
+        total = len(names)
+
+        for i, name in enumerate(names, 1):
+            percent(i, total)
             rel = name[len(prefix):]
             target = libs / rel
+
             if name.endswith('/'):
                 target.mkdir(parents=True, exist_ok=True)
             else:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(z.read(name))
 
-    print('libraries загружены.')
+    print("\nlibraries загружены.")
 
 
 def ensure_natives(root):
     natives = root / 'natives25'
     if natives.exists():
         return
-
     print('Загрузка natives25...')
     r = requests.get(ZIP_URL, timeout=60)
     r.raise_for_status()
@@ -211,18 +217,21 @@ def ensure_natives(root):
         if not prefix:
             raise RuntimeError('natives25 не найдены.')
 
-        for name in z.namelist():
-            if not name.startswith(prefix):
-                continue
+        names = [n for n in z.namelist() if n.startswith(prefix)]
+        total = len(names)
+
+        for i, name in enumerate(names, 1):
+            percent(i, total)
             rel = name[len(prefix):]
             target = natives / rel
+
             if name.endswith('/'):
                 target.mkdir(parents=True, exist_ok=True)
             else:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(z.read(name))
 
-    print('natives загружены.')
+    print("\nnatives загружены.")
 
 
 def prefix(name):
