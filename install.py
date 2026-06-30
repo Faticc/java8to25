@@ -19,11 +19,12 @@ clients = {
 }
 
 def ask_int(prompt):
-    try:
-        return int(input(prompt))
-    except ValueError:
-        print("Ошибка: нужно целое число.")
-        exit(1)
+    while True:
+        value = input(prompt)
+        try:
+            return int(value)
+        except ValueError:
+            print("Ошибка: нужно целое число.")
 
 # ---------------------------------------------------------
 # 2. Ввод параметров
