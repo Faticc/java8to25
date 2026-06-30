@@ -483,14 +483,14 @@ def launch_minecraft(
     ]
 
     full_args = [*dynamic_jvm_args, *JVM_ARGS, '-cp', classpath, main_class, *mc_args]
-
+    
     args_file_fd, args_file_path = tempfile.mkstemp(prefix=f'mc-{params.pp.username}-', suffix='.args', text=True)
     with os.fdopen(args_file_fd, 'w', encoding='utf-8') as f:
         for arg in full_args:
             escaped_arg = arg.replace('\\', '\\\\').replace('"', '\\"')
-            f.write(f'{escaped_arg}\n')
+            f.write(f'"{escaped_arg}"\n')
 
-    cmd = [str(java_path), f'@{args_file_path}']
+    cmd = [str(java_path), f"@{args_file_path}"]
     print(f'[{params.pp.username}] Запуск... (файл аргументов: {args_file_path})\n')
 
     proc = subprocess.Popen(
