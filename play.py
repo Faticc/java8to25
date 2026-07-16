@@ -11,9 +11,8 @@ import sys
 import os
 import io
 from requests.adapters import HTTPAdapter
-from typing import Optional, List, Dict
+from typing import List, Dict
 from urllib3.util.retry import Retry
-from dataclasses import dataclass
 from auth import send_request
 from pathlib import Path
 
@@ -314,41 +313,7 @@ def updates():
     print('Завершено.')
 
 # лаунчер
-@dataclass
-class Skin:
-    url: str
-    digest_hex: str = ''
 
-@dataclass
-class Cloak:
-    url: str
-    digest_hex: str = ''
-
-@dataclass
-class PlayerProfile:
-    username: str
-    uuid: str
-    skin: Optional[Skin] = None
-    cloak: Optional[Cloak] = None
-
-@dataclass
-class ClientProfile:
-    version: str
-    asset_index: str
-    client_args: List[str]
-    server_address: Optional[str] = None
-    server_port: Optional[int] = None
-
-@dataclass
-class Params:
-    pp: PlayerProfile
-    access_token: str
-    client_dir: Path
-    asset_dir: Path
-    auto_enter: bool = False
-    full_screen: bool = False
-    width: int = 0
-    height: int = 0
 
 JVM_ARGS = [
     '-XX:HeapDumpPath=ThisTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump',
